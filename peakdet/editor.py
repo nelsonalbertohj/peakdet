@@ -23,6 +23,7 @@ class _PhysioEditor():
     def __init__(self, data):
         # save reference to data and generate "time" for interpretable X-axis
         self.data = utils.check_physio(data, copy=True)
+        self.coords = []
         fs = 1 if data.fs is None else data.fs
         self.time = np.arange(0, len(data.data) / fs, 1 / fs)
 
@@ -34,6 +35,9 @@ class _PhysioEditor():
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, tight_layout=True)
         self.fig.canvas.mpl_connect('scroll_event', self.on_wheel)
         self.fig.canvas.mpl_connect('key_press_event', self.on_key)
+
+        # added onclick event detection
+        self.fig.canvas.mpl_connect('button_press_event', self.on_click)
 
         # two selectors for rejection (left mouse) and deletion (right mouse)
         reject = functools.partial(self.on_remove, reject=True)
@@ -64,6 +68,15 @@ class _PhysioEditor():
                      self.data[self.data.troughs], '.g')
         self.ax.set(xlim=xlim, ylim=ylim, yticklabels='')
         self.fig.canvas.draw()
+
+    def on_click(self, event):
+        if event.dblclick:
+            ix, iy = event.xdata, event.ydata
+            print('x = %d' % (int(ix*self.data._fs)))
+            self.data = operations.add_peaks(self.data,int(ix*self.data._fs))
+            self.coords.append(int(ix*self.data._fs))
+            print("coords list: ", self.coords)
+            self.plot_signals()
 
     def on_wheel(self, event):
         """ Moves axis on wheel scroll """

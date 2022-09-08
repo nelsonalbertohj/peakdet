@@ -181,6 +181,26 @@ def reject_peaks(data, remove):
 
     return data
 
+@utils.make_operation()
+def add_peaks(data, add_peaks):
+    """
+    Marks peaks in `remove` as rejected artifacts in `data`
+
+    Parameters
+    ----------
+    data : Physio_like
+    remove : array_like
+
+    Returns
+    -------
+    data : Physio_like
+    """
+
+    data = utils.check_physio(data, ensure_fs=False, copy=True)
+    data._metadata['peaks'] = np.sort(np.append(data.peaks,np.array(add_peaks)))
+    data._metadata['troughs'] = utils.check_troughs(data, data.peaks)
+
+    return data
 
 def edit_physio(data):
     """
