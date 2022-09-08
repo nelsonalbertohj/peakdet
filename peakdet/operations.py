@@ -229,7 +229,7 @@ def edit_physio(data):
     delete, reject, added = sorted(edits.deleted), sorted(edits.rejected), sorted(edits.added)
 
     # replay editing on original provided data object
-    if added is not None:
+    if added:
         data = add_peaks(data, add_peaks= added)
     if reject is not None:
         data = reject_peaks(data, remove=reject)
