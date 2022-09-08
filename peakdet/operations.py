@@ -197,7 +197,8 @@ def add_peaks(data, add_peaks):
     """
 
     data = utils.check_physio(data, ensure_fs=False, copy=True)
-    data._metadata['peaks'] = np.sort(np.append(data.peaks,np.array(add_peaks)))
+    data._metadata['peaks'] = np.sort(np.append(data._metadata['peaks'],np.array(add_peaks)))
+
     data._metadata['troughs'] = utils.check_troughs(data, data.peaks)
 
     return data
