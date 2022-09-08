@@ -197,8 +197,7 @@ def add_peaks(data, add_peaks):
     """
 
     data = utils.check_physio(data, ensure_fs=False, copy=True)
-    data._metadata['peaks'] = np.sort(np.append(data._metadata['peaks'],np.array(add_peaks)))
-
+    data._metadata['peaks'] = np.sort(np.append(data.peaks,np.array(add_peaks)))
     data._metadata['troughs'] = utils.check_troughs(data, data.peaks)
 
     return data
@@ -227,9 +226,11 @@ def edit_physio(data):
     # perform manual editing
     edits = editor._PhysioEditor(data)
     plt.show(block=True)
-    delete, reject = sorted(edits.deleted), sorted(edits.rejected)
+    delete, reject, added = sorted(edits.deleted), sorted(edits.rejected), sorted(edits.added)
 
     # replay editing on original provided data object
+    if added is not None:
+        data = add_peaks(data, add_peaks= added)
     if reject is not None:
         data = reject_peaks(data, remove=reject)
     if delete is not None:

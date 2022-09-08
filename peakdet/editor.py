@@ -23,13 +23,12 @@ class _PhysioEditor():
     def __init__(self, data):
         # save reference to data and generate "time" for interpretable X-axis
         self.data = utils.check_physio(data, copy=True)
-        self.coords = []
         fs = 1 if data.fs is None else data.fs
         self.time = np.arange(0, len(data.data) / fs, 1 / fs)
 
         # we need to create these variables in case someone doesn't "quit"
         # the plot appropriately (i.e., clicks X instead of pressing ctrl+q)
-        self.deleted, self.rejected = set(), set()
+        self.deleted, self.rejected, self.added = set(), set(), set()
 
         # make main plot objects
         self.fig, self.ax = plt.subplots(nrows=1, ncols=1, tight_layout=True)
@@ -74,8 +73,8 @@ class _PhysioEditor():
             ix, iy = event.xdata, event.ydata
             print('x = %d' % (int(ix*self.data._fs)))
             self.data = operations.add_peaks(self.data,int(ix*self.data._fs))
-            self.coords.append(int(ix*self.data._fs))
-            print("coords list: ", self.coords)
+            self.added.add(int(ix*self.data._fs))
+            print("coords list: ", self.added)
             self.plot_signals()
 
     def on_wheel(self, event):
